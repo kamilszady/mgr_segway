@@ -1,0 +1,79 @@
+%implements "chartSource" "C"
+%function ChartConfig(block, system) void
+  %createrecord chartConfiguration { ...
+          executeAtInitialization  0 ...
+  }
+  %return chartConfiguration
+%endfunction
+%function ChartDataMap(block, system) void
+  %createrecord ChartDataElements {\
+    NumChartData   8 \
+    ChartDataDefaults {\
+      RecordType   "ChartData"\
+      Dimensions   []\
+      IsTestPoint  0\
+    }\
+    ChartData {\
+      Name         "H"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:69-70"\
+      Dimensions   [1,3]\
+    }\
+    ChartData {\
+      Name         "Q"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:71-72"\
+      Dimensions   [3,3]\
+    }\
+    ChartData {\
+      Name         "R"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:73-74"\
+    }\
+    ChartData {\
+      Name         "P"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:75-76"\
+      Dimensions   [3,3]\
+    }\
+    ChartData {\
+      Name         "P_not_empty"\
+      Description  "EmlPersistentSentinel"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:75-76"\
+    }\
+    ChartData {\
+      Name         "I"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:77-78"\
+      Dimensions   [3,3]\
+    }\
+    ChartData {\
+      Name         "x_est"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:79-84"\
+      Dimensions   [3]\
+    }\
+    ChartData {\
+      Name         "q"\
+      Description  "EmlPersistent"\
+      SFName       ""\
+      Path         ""\
+      SrcLocation  "UnTrans_basicLQR:1259:85-86"\
+    }\
+  }
+  %return ChartDataElements
+%endfunction

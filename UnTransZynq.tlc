@@ -1,0 +1,121 @@
+%% SYSTLC: MicroZed Real-Time Target \
+%%    TMF: UnTransZynq.tmf MAKE: make_rtw EXTMODE: ext_comm 
+%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                              %%
+%%  RT-CON                                                                      %%
+%%                                                                              %%
+%%  Packages:   RT-CON                                                          %%
+%%                                                                              %%
+%%  MATLAB versions:                 7.3 (2006b)                                %%
+%%  Simulink versions:               6.5 (2006b)                                %%
+%%  RTW versions:                    6.5 (2006b)                                %%
+%%                                                                              %%
+%%  (C) COPYRIGHT 2006 InTeCo Inc., 2K                                          %%
+%%  Last modification: 2018.06.06                                               %%
+%%                                                                              %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%selectfile NULL_FILE
+
+%assign TargetType = "RT"
+%assign Language   = "C"
+%assign GenRTModel = 1
+
+%assign MatFileLogging = 1
+
+%include "codegenentry.tlc"
+
+%assign FREQUENCY = 1/%<CompiledModel.FundamentalStepSize>
+
+
+%selectfile NULL_FILE
+
+%openfile fl = "%<CompiledModel.Name>_Times.mk", "w"
+## ADDED TO MODIFY BASIC TIMER FREQUENCY OF FREERTOS 
+TFINAL    = %<CompiledModel.StopTime>
+TPERIOD   = %<CompiledModel.FundamentalStepSize>
+FREQUENCY = %<FREQUENCY>
+%closefile fl
+
+%openfile fl = "%<CompiledModel.Name>.c", "a"
+
+#include <stdio.h>
+
+/* Final time from "Simulation Parameters"   */
+real_T finaltime = %<CompiledModel.StopTime>;
+
+////////////////////////////////////////////////
+//
+//  Return compilation date and time
+//
+char *GetDateAndTime( void ) {
+  static char AuxStr[ 128 ];
+  sprintf( AuxStr, "%s %s", __DATE__, __TIME__ );
+  return( AuxStr );
+}
+
+unsigned Date2Hex( void ) {
+    char buff[32];
+    unsigned month, day, year, d2h;
+    static const char month_names[] = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    sscanf(__DATE__, "%s %d %d", buff, &day, &year);
+    month = (strstr(month_names, buff)-month_names)/3+1;
+    d2h  = 0x10000000 * (year / 1000);  year=(year % 1000);
+    d2h += 0x01000000 * (year /  100);  year=(year % 100);
+    d2h += 0x00100000 * (year /   10);  year=(year % 10);
+    d2h += 0x00010000 *  year;
+    d2h += 0x00001000 * (month / 10);   month=(month % 10);
+    d2h += 0x00000100 * month;
+    d2h += 0x00000010 * (day / 10);     day=(day % 10);
+    d2h += 0x00000001 * day;
+    return( d2h );
+} 
+
+%closefile fl
+
+
+%% The contents between 'BEGIN_RTW_OPTIONS' and 'END_RTW_OPTIONS' are strictly 
+%% written by the standard format. We need to use this structure in RTW 
+%% options GUI function rtwoptionsdlg.m file.
+%%
+/%
+  BEGIN_RTW_OPTIONS
+
+  rtwoptions(1).prompt         = 'RTDAC/Zynq options';
+  rtwoptions(1).type           = 'Category';
+  rtwoptions(1).enable         = 'on';  
+  rtwoptions(1).default        = 2;   % number of items under this category excluding this one.
+  
+  rtwoptions(1).popupstrings  = '';
+  rtwoptions(1).tlcvariable   = '';
+  rtwoptions(1).tooltip       = '';
+  rtwoptions(1).callback      = '';
+  rtwoptions(1).opencallback  = '';
+  rtwoptions(1).closecallback = '';
+  rtwoptions(1).makevariable  = '';
+
+  rtwoptions(2).prompt         = 'Wait for start command';
+  rtwoptions(2).type           = 'Checkbox';
+  rtwoptions(2).default        = 'off';
+  rtwoptions(2).tlcvariable    = 'WaitForStartpackage';
+  rtwoptions(2).makevariable   = 'WAIT_FOR_START_PACKAGE';
+  rtwoptions(2).tooltip        = ['Start real-time task after Run command'];
+
+  %----------------------------------------%
+  % Configure RTW code generation settings %
+  %----------------------------------------%
+  
+  rtwgensettings.BuildDirSuffix = '_uZ_rtw';
+  rtwgensettings.Version        = '1';
+
+  rtwgensettings.SelectCallback = 'untranszynq_selectcallback(hDlg, hSrc)';
+
+  rtwgensettings.DerivedFrom    = 'grt.tlc';
+  
+  END_RTW_OPTIONS 
+ %/
+
